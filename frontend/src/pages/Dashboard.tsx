@@ -9,7 +9,7 @@ import DailyFact from '@/components/DailyFact';
 import TecoShop from '@/components/TecoShop';
 
 const Dashboard = () => {
-  const [plantName, setPlantName] = useState('EcoSage');
+  const [plantName, setPlantName] = useState('Sage');
   const [plantGrowth, setPlantGrowth] = useState(25);
   const [waterLevel, setWaterLevel] = useState(75);
   const [tecoCoins, setTecoCoins] = useState(150);
@@ -73,7 +73,7 @@ const Dashboard = () => {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">
-            EcoGrow Platform
+            Albedo
           </h1>
           <p className="text-lg text-muted-foreground">
             Growing a sustainable future, one plant at a time
