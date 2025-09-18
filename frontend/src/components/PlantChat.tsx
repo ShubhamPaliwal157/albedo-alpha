@@ -52,9 +52,12 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
     setIsTyping(true);
 
     try {
-      const res = await fetch("/api/plantAI", {
+      const res = await fetch("http://localhost:3000/api/plantAI", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify({ 
           question: inputValue,
           plantInfo: {
@@ -69,14 +72,19 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
       });
 
       if (!res.ok) {
-        throw new Error('Failed to get response');
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to get response');
       }
 
       const data = await res.json();
 
+      if (!data || !data.answer) {
+        throw new Error('Invalid response format');
+      }
+
       const plantResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.answer || "Sorry, I couldn't think of a response 🌱",
+        text: data.answer,
         sender: 'plant',
         timestamp: new Date()
       };
@@ -86,7 +94,7 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
       console.error("Error fetching AI response:", err);
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        text: "I'm having trouble connecting to my future knowledge. Can we try again? 🌱",
+        text: "I'm having trouble connecting right now. Please try again in a moment! 🌱",
         sender: 'plant',
         timestamp: new Date()
       }]);
