@@ -45,12 +45,12 @@ const Index = () => {
           >
             <Badge variant="outline" className="mb-6 text-primary border-primary/30">
               <Leaf className="w-4 h-4 mr-2" />
-              Environmental Education Platform
+              Albedo - an eco learning platform
             </Badge>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary mb-6 leading-tight">
               Grow Your
-              <span className="block text-secondary"> AI Plant Companion</span>
+              <span className="block text-secondary"> Plant Companion</span>
               <span className="block text-accent"> Save the Future</span>
             </h1>
             
@@ -107,7 +107,7 @@ const Index = () => {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Why Choose EcoGrow?
+              Why Choose Albedo?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Revolutionary gamified learning that makes environmental education engaging and impactful
