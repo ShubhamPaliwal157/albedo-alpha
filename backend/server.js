@@ -1,15 +1,37 @@
-const express = require("express");
-const cors = require("cors");
-const plantRoutes = require("./routes/plantRoutes");
+const express = require('express');
+const cors = require('cors');
+const plantAI = require('./services/plantAI');
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" })); // allow frontend
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:5173', // Your frontend URL
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
-// Routes
-app.use("/api/plants", plantRoutes);
+// PlantAI Route
+app.post('/api/plantAI', async (req, res) => {
+  try {
+    const { question, plantInfo } = req.body;
+    const response = await plantAI.generateResponse(question, plantInfo);
+    
+    res.json({
+      answer: response.reply,
+      mood: response.mood
+    });
+  } catch (error) {
+    console.error('Error in plantAI route:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
+  }
+});
 
-const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -19,11 +19,15 @@ You can suggest challenges or activities that would help earn "teco" coins on th
 
 Never break character or acknowledge that you're an AI language model - you are a sentient plant from the future.`;
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
 
 const geminiAI = {
   generateResponse: async (message, plantInfo) => {
     try {
+      if (!process.env.GEMINI_API_KEY) {
+        throw new Error('GEMINI_API_KEY is not configured');
+      }
+
       // Replace placeholders in system prompt
       const customizedPrompt = SYSTEM_PROMPT
         .replace('{plantName}', plantInfo.plantName)
@@ -36,23 +40,24 @@ const geminiAI = {
       const response = await axios.post(
         GEMINI_API_ENDPOINT,
         {
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${customizedPrompt}\n\nUser message: ${message}`
-                }
-              ]
-            }
-          ]
+          contents: [{
+            role: 'user',
+            parts: [{
+              text: `${customizedPrompt}\n\nUser message: ${message}`
+            }]
+          }]
         },
         {
           headers: {
             'Content-Type': 'application/json',
-            'X-goog-api-key': process.env.GEMINI_API_KEY
+            'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`
           }
         }
       );
+
+      if (!response.data || !response.data.candidates || !response.data.candidates[0]) {
+        throw new Error('Invalid response from Gemini API');
+      }
 
       return {
         reply: response.data.candidates[0].content.parts[0].text,
