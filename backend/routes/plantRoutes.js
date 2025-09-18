@@ -3,6 +3,7 @@ const router = express.Router();
 const PlantController = require('../controllers/PlantController');
 const authMiddleware = require('../middleware/authMiddleware');
 const { getPlantAIResponse } = require("../services/plantAI");
+const plantAI = require('../services/plantAI');
 
 // temporary test
 router.get("/", (req, res) => {
@@ -10,9 +11,25 @@ router.get("/", (req, res) => {
 });
 
 router.post("/plantAI", async (req, res) => {
-  const { question } = req.body;
-  const answer = await getPlantAIResponse(question); // custom function
-  res.json({ answer });
+  try {
+    const { question, plantInfo } = req.body;
+    const response = await plantAI.generateResponse(question, {
+      plantName: plantInfo.name || "Future Plant",
+      plantType: plantInfo.type || "Time-traveling Flora",
+      ownerName: plantInfo.ownerName || "Caretaker",
+      plantMood: plantInfo.mood || "neutral",
+      plantAge: plantInfo.age || "0",
+      growthStage: plantInfo.growthStage || "seed"
+    });
+    
+    res.json({ answer: response.reply, mood: response.mood });
+  } catch (error) {
+    console.error('Error in plantAI route:', error);
+    res.status(500).json({ 
+      error: "Failed to generate response",
+      message: error.message 
+    });
+  }
 });
 
 module.exports = router;

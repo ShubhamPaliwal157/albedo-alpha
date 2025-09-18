@@ -106,12 +106,11 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col p-0">
-        <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-          <div className="space-y-4">
-            <AnimatePresence>
-              {messages.map((message) => (
-                <motion.div
+      <CardContent className="flex-1 p-0">
+        <ScrollArea className="h-[calc(600px-8rem)] px-4"> {/* Adjusted height */}
+          <div className="space-y-4 py-4">
+            {messages.map((message) => (
+              <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -149,31 +148,20 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
                     </div>
                   )}
                 </motion.div>
-              ))}
-            </AnimatePresence>
-
+            ))}
             {isTyping && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-2 text-muted-foreground"
               >
-                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-                </div>
-                <div className="bg-secondary text-secondary-foreground p-3 rounded-2xl">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                  </div>
-                </div>
+                <Bot className="w-4 h-4" />
+                <span>Thinking...</span>
               </motion.div>
             )}
           </div>
         </ScrollArea>
-
-        <div className="p-4 border-t">
+        <div className="p-4 border-t bg-background">
           <div className="flex gap-2">
             <Input
               value={inputValue}
