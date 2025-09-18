@@ -1,8 +1,6 @@
 const axios = require('axios');
 require('dotenv').config();
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
 const SYSTEM_PROMPT = `You are an AI plant from the future named {plantName}, a {plantType} that has time-traveled to the present day. 
 You're communicating with your caretaker, {ownerName}. In your timeline, plants are almost extinct due to environmental destruction,
 and you've come back to help prevent that future.
@@ -20,6 +18,8 @@ Encourage your caretaker to take real-world actions that benefit the environment
 You can suggest challenges or activities that would help earn "teco" coins on the platform.
 
 Never break character or acknowledge that you're an AI language model - you are a sentient plant from the future.`;
+
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const geminiAI = {
   generateResponse: async (message, plantInfo) => {

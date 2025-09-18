@@ -2,27 +2,14 @@ const express = require('express');
 const router = express.Router();
 const PlantController = require('../controllers/PlantController');
 const authMiddleware = require('../middleware/authMiddleware');
-const { getPlantAIResponse } = require("../services/plantAI");
+// const { getPlantAIResponse } = require("../services/plantAI");
 const plantAI = require('../services/plantAI');
-
-// temporary test
-router.get("/", (req, res) => {
-  res.json([{ _id: "1", name: "Aloe Vera" }, { _id: "2", name: "Tulsi" }]);
-});
 
 router.post("/plantAI", async (req, res) => {
   try {
     const { question, plantInfo } = req.body;
-    const response = await plantAI.generateResponse(question, {
-      plantName: plantInfo.name || "Future Plant",
-      plantType: plantInfo.type || "Time-traveling Flora",
-      ownerName: plantInfo.ownerName || "Caretaker",
-      plantMood: plantInfo.mood || "neutral",
-      plantAge: plantInfo.age || "0",
-      growthStage: plantInfo.growthStage || "seed"
-    });
-    
-    res.json({ answer: response.reply, mood: response.mood });
+    const response = await plantAI.generateResponse(question, plantInfo);
+    res.json({ answer: response.reply });
   } catch (error) {
     console.error('Error in plantAI route:', error);
     res.status(500).json({ 

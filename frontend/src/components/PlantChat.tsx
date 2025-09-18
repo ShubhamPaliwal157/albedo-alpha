@@ -87,27 +87,86 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
     }
   }, [messages]);
 
+  const sendMessage = async () => {
+    if (!inputValue.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      text: inputValue,
+      sender: 'user',
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsTyping(true);
+
+    try {
+      const res = await fetch("/api/plantAI", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          question: inputValue,
+          plantInfo: {
+            plantName: plantName,
+            plantType: "Future Tree",
+            ownerName: "Caretaker",
+            plantMood: "neutral",
+            plantAge: "0",
+            growthStage: "seedling"
+          }
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to get response');
+      }
+
+      const data = await res.json();
+
+      const plantResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.answer || "Sorry, I couldn't think of a response 🌱",
+        sender: 'plant',
+        timestamp: new Date()
+      };
+
+      setMessages(prev => [...prev, plantResponse]);
+    } catch (err) {
+      console.error("Error fetching AI response:", err);
+      // Add error message to chat
+      setMessages(prev => [...prev, {
+        id: Date.now().toString(),
+        text: "I'm having trouble connecting to my future knowledge. Can we try again? 🌱",
+        sender: 'plant',
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
   return (
-    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
-      <CardHeader className="bg-gradient-to-r from-accent/20 to-primary/20 border-b">
+    <Card className="w-full max-w-2xl h-[80vh] max-h-[600px] flex flex-col"> {/* Updated height */}
+      <CardHeader className="bg-gradient-to-r from-accent/20 to-primary/20 border-b py-3"> {/* Reduced padding */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-              <Bot className="w-6 h-6 text-primary animate-pulse-gentle" />
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"> {/* Reduced size */}
+              <Bot className="w-4 h-4 text-primary animate-pulse-gentle" />
             </div>
             <div>
-              <CardTitle className="text-lg">{plantName}</CardTitle>
-              <p className="text-sm text-muted-foreground">AI from 2157 • Online</p>
+              <CardTitle className="text-base">{plantName}</CardTitle> {/* Reduced text size */}
+              <p className="text-xs text-muted-foreground">AI from 2157 • Online</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>
-            ×
+            <X className="w-4 h-4" />
           </Button>
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 p-0">
-        <ScrollArea className="h-[calc(600px-8rem)] px-4"> {/* Adjusted height */}
+      <CardContent className="flex-1 p-0 flex flex-col">
+        <ScrollArea className="flex-1 px-4">
           <div className="space-y-4 py-4">
             {messages.map((message) => (
               <motion.div
@@ -127,19 +186,25 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
                   )}
                   
                   <div
-                    className={`max-w-[75%] p-3 rounded-2xl ${
-                      message.sender === 'user'
-                        ? 'bg-primary text-primary-foreground ml-auto'
-                        : 'bg-secondary text-secondary-foreground'
-                    }`}
+                  className={`flex items-start gap-2 max-w-[80%] ${
+                    message.sender === 'user' ? 'flex-row-reverse' : ''
+                  }`}
                   >
-                    <p className="text-sm">{message.text}</p>
-                    <span className="text-xs opacity-70 mt-1 block">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </span>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        message.sender === 'user'
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <p className="text-sm">{message.text}</p>
+                      <span className="text-xs opacity-70 mt-1 block">
+                        {message.timestamp.toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
+                    </div>
                   </div>
 
                   {message.sender === 'user' && (
@@ -161,7 +226,7 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
             )}
           </div>
         </ScrollArea>
-        <div className="p-4 border-t bg-background">
+        <div className="p-3 border-t bg-background">
           <div className="flex gap-2">
             <Input
               value={inputValue}
