@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const plantAI = require('./services/plantAI');
@@ -9,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({
   origin: 'http://localhost:5173', // Your frontend URL
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'Accept']
 }));
 app.use(express.json());
 
@@ -34,4 +35,5 @@ app.post('/api/plantAI', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`GEMINI_API_KEY loaded: ${process.env.GEMINI_API_KEY ? 'Yes' : 'No'}`);
 });

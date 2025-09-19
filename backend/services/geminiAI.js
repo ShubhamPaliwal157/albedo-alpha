@@ -19,7 +19,7 @@ You can suggest challenges or activities that would help earn "teco" coins on th
 
 Never break character or acknowledge that you're an AI language model - you are a sentient plant from the future.`;
 
-const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+const GEMINI_API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const geminiAI = {
   generateResponse: async (message, plantInfo) => {
@@ -50,7 +50,7 @@ const geminiAI = {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.GEMINI_API_KEY}`
+            'X-goog-api-key': process.env.GEMINI_API_KEY
           }
         }
       );
