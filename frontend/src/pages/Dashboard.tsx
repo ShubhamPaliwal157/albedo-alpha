@@ -153,13 +153,13 @@ const Dashboard = () => {
     // Auth gate: check session
     (async () => {
       try {
-        const res = await fetch(((import.meta as any).env?.VITE_API_BASE || '/api') + '/me', { credentials: 'include' });
+        const res = await fetch(((import.meta as any).env?.VITE_API_BASE_URL || 'https://albedo-alpha.vercel.app') + '/api/me', { credentials: 'include' });
         if (!res.ok) throw new Error('unauthorized');
         const json = await res.json();
         if (!json?.success) throw new Error('unauthorized');
       } catch {
         // redirect to Google OAuth start
-        window.location.href = ((import.meta as any).env?.VITE_SERVER_BASE?.replace(/\/$/, '') || 'http://localhost:3000') + '/auth/google/start';
+        window.location.href = ((import.meta as any).env?.VITE_SERVER_BASE?.replace(/\/$/, '') || 'https://albedo-alpha.vercel.app') + '/auth/google/start';
         return;
       }
       // Load saved client state on mount
