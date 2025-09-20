@@ -24,6 +24,16 @@ app.get('/', (req, res) => {
   res.send('Albedo Backend is running');
 });
 
+// Debug endpoint to check environment variables
+app.get('/debug/config', (req, res) => {
+  res.json({
+    SERVER_BASE: SERVER_BASE,
+    FRONTEND_ORIGIN: FRONTEND_ORIGIN,
+    NODE_ENV: process.env.NODE_ENV,
+    redirect_uri: `${SERVER_BASE}/auth/google/callback`
+  });
+});
+
 // Middleware
 app.use(cors({
   origin: function (origin, callback) {
