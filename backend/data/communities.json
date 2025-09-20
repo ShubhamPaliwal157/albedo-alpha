@@ -1,0 +1,134 @@
+{
+  "PHWS98": {
+    "id": "PHWS98",
+    "name": "GECA Eco Community",
+    "description": "College official GECA Eco community",
+    "creatorId": "100190976803838609622",
+    "createdAt": 1758295373110,
+    "members": [
+      "100190976803838609622",
+      "103251541095024160998"
+    ],
+    "admins": [
+      "100190976803838609622"
+    ],
+    "currency": {
+      "name": "EcoCoins",
+      "icon": "🪙"
+    },
+    "memberBalances": {
+      "100190976803838609622": 1000,
+      "103251541095024160998": 500
+    },
+    "events": [],
+    "dustbins": [],
+    "customTasks": [],
+    "leaderboard": [
+      {
+        "userId": "100190976803838609622",
+        "score": 0,
+        "tecoCoins": 0,
+        "communityCoins": 1000
+      },
+      {
+        "userId": "103251541095024160998",
+        "score": 0,
+        "tecoCoins": 0,
+        "communityCoins": 500
+      }
+    ]
+  },
+  "OPRIGR": {
+    "id": "OPRIGR",
+    "name": "GECA Official Eco Community",
+    "description": "College Campus Ecological and Green Society",
+    "creatorId": "100190976803838609622",
+    "createdAt": 1758303231187,
+    "members": [
+      "100190976803838609622"
+    ],
+    "admins": [
+      "100190976803838609622"
+    ],
+    "currency": {
+      "name": "EcoCoins",
+      "icon": "🪙"
+    },
+    "memberBalances": {
+      "100190976803838609622": 1000
+    },
+    "events": [],
+    "dustbins": [],
+    "customTasks": [],
+    "leaderboard": [
+      {
+        "userId": "100190976803838609622",
+        "score": 0,
+        "tecoCoins": 0,
+        "communityCoins": 1000
+      }
+    ]
+  },
+  "VPTRN1": {
+    "id": "VPTRN1",
+    "name": "test",
+    "description": "",
+    "creatorId": "100190976803838609622",
+    "createdAt": 1758303313158,
+    "members": [
+      "100190976803838609622"
+    ],
+    "admins": [
+      "100190976803838609622"
+    ],
+    "currency": {
+      "name": "EcoCoins",
+      "icon": "🪙"
+    },
+    "memberBalances": {
+      "100190976803838609622": 1000
+    },
+    "events": [],
+    "dustbins": [],
+    "customTasks": [],
+    "leaderboard": [
+      {
+        "userId": "100190976803838609622",
+        "score": 0,
+        "tecoCoins": 0,
+        "communityCoins": 1000
+      }
+    ]
+  },
+  "KKI6XY": {
+    "id": "KKI6XY",
+    "name": "fghjkkl",
+    "description": "",
+    "creatorId": "100190976803838609622",
+    "createdAt": 1758303726206,
+    "members": [
+      "100190976803838609622"
+    ],
+    "admins": [
+      "100190976803838609622"
+    ],
+    "currency": {
+      "name": "EcoCoins",
+      "icon": "🪙"
+    },
+    "memberBalances": {
+      "100190976803838609622": 1000
+    },
+    "events": [],
+    "dustbins": [],
+    "customTasks": [],
+    "leaderboard": [
+      {
+        "userId": "100190976803838609622",
+        "score": 0,
+        "tecoCoins": 0,
+        "communityCoins": 1000
+      }
+    ]
+  }
+}

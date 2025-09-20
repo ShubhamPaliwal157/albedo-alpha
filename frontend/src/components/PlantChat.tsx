@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { askPlantAI } from '@/api/plantApi';
 
 interface Message {
   id: string;
@@ -15,10 +16,11 @@ interface Message {
 
 interface PlantChatProps {
   plantName: string;
+  plantType: string; // <-- add this
   onClose: () => void;
 }
 
-const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
+const PlantChat: React.FC<PlantChatProps> = ({ plantName, plantType, onClose }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -29,7 +31,32 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [mood, setMood] = useState<string>('happy'); // <-- track mood
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const moodMeta = (m: string) => {
+    const moodKey = (m || '').toLowerCase();
+    switch (moodKey) {
+      case 'thirsty':
+        return { emoji: '💧', badge: 'border-sky-400 text-sky-700 bg-sky-50' };
+      case 'excited':
+        return { emoji: '✨', badge: 'border-amber-400 text-amber-700 bg-amber-50' };
+      case 'growing':
+        return { emoji: '🌱', badge: 'border-green-400 text-green-700 bg-green-50' };
+      case 'wise':
+        return { emoji: '🪵', badge: 'border-emerald-400 text-emerald-700 bg-emerald-50' };
+      case 'playful':
+        return { emoji: '😄', badge: 'border-pink-400 text-pink-700 bg-pink-50' };
+      case 'lonely':
+        return { emoji: '🌫️', badge: 'border-slate-400 text-slate-700 bg-slate-50' };
+      case 'grateful':
+        return { emoji: '💚', badge: 'border-lime-400 text-lime-700 bg-lime-50' };
+      case 'worried':
+        return { emoji: '⚠️', badge: 'border-orange-400 text-orange-700 bg-orange-50' };
+      default:
+        return { emoji: '🌿', badge: 'border-teal-400 text-teal-700 bg-teal-50' };
+    }
+  };
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -52,35 +79,20 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
     setIsTyping(true);
 
     try {
-      const res = await fetch("http://localhost:3000/api/plantAI", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({ 
-          question: inputValue,
-          plantInfo: {
-            plantName: plantName,
-            plantType: "Future Tree",
-            ownerName: "Caretaker",
-            plantMood: "neutral",
-            plantAge: "0",
-            growthStage: "seedling"
-          }
-        })
+      const data = await askPlantAI(inputValue, {
+        plantName: plantName,
+        plantType: plantType, // <-- use prop
+        ownerName: "Caretaker",
+        plantMood: "neutral",
+        plantAge: "0",
+        growthStage: "seedling"
       });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Failed to get response');
-      }
-
-      const data = await res.json();
 
       if (!data || !data.answer) {
         throw new Error('Invalid response format');
       }
+
+      setMood(data.mood || 'happy'); // <-- set mood
 
       const plantResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -112,7 +124,12 @@ const PlantChat: React.FC<PlantChatProps> = ({ plantName, onClose }) => {
               <Bot className="w-4 h-4 text-primary animate-pulse-gentle" />
             </div>
             <div>
-              <CardTitle className="text-base">{plantName}</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                {plantName}
+                <span className={`text-[10px] px-2 py-0.5 rounded-full border capitalize ${moodMeta(mood).badge}`} data-mood={mood}>
+                  {moodMeta(mood).emoji} {mood}
+                </span>
+              </CardTitle>
               <p className="text-xs text-muted-foreground">AI from 2157 • Online</p>
             </div>
           </div>

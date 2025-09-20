@@ -9,7 +9,14 @@ const plantSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['oak', 'maple', 'banyan', 'redwood', 'cherry']
+    enum: [
+      'oak', 'maple', 'banyan', 'redwood', 'cherry',
+      'pine', 'willow', 'cactus', 'bonsai', 'sunflower',
+      'fern', 'baobab', 'bamboo', 'rose', 'mangrove',
+      'apple', 'peach', 'fig', 'olive', 'palm',
+      'spruce', 'cedar', 'birch', 'sequoia', 'acacia',
+      'lotus', 'tulip', 'daisy', 'lavender', 'sage'
+    ]
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
@@ -18,7 +25,10 @@ const plantSchema = new mongoose.Schema({
   },
   growthStage: {
     type: String,
-    enum: ['seed', 'sprout', 'sapling', 'young', 'mature'],
+    enum: [
+      'seed', 'sprout', 'seedling', 'sapling', 'juvenile',
+      'young', 'mature', 'flowering', 'fruiting', 'ancient'
+    ],
     default: 'seed'
   },
   age: {

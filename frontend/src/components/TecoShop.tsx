@@ -11,8 +11,10 @@ interface ShopItem {
   description: string;
   price: number;
   icon: React.ReactNode;
-  category: 'fertilizer' | 'decoration' | 'protection';
+  category: 'fertilizer' | 'decoration' | 'protection' | 'background' | 'species';
   effect: string;
+  backgroundTheme?: string; // tailwind gradient classes for backgrounds
+  species?: string; // species name to unlock/switch to
 }
 
 interface TecoShopProps {
@@ -74,6 +76,48 @@ const shopItems: ShopItem[] = [
     icon: <Palette className="w-6 h-6" />,
     category: 'decoration',
     effect: 'Holographic Effect'
+  },
+  // Backgrounds
+  {
+    id: 'bg-aurora',
+    name: 'Aurora Sky',
+    description: 'Ethereal gradients inspired by polar lights',
+    price: 110,
+    icon: <Palette className="w-6 h-6" />,
+    category: 'background',
+    effect: 'Aurora Gradient',
+    backgroundTheme: 'from-fuchsia-100 to-cyan-100'
+  },
+  {
+    id: 'bg-forest',
+    name: 'Forest Glade',
+    description: 'Deep greens and soft sunlight',
+    price: 100,
+    icon: <Palette className="w-6 h-6" />,
+    category: 'background',
+    effect: 'Forest Gradient',
+    backgroundTheme: 'from-emerald-50 to-lime-100'
+  },
+  // Species unlocks
+  {
+    id: 'species-willow',
+    name: 'Willow Species',
+    description: 'Unlock the graceful Willow',
+    price: 130,
+    icon: <Palette className="w-6 h-6" />,
+    category: 'species',
+    effect: 'Unlock Willow',
+    species: 'willow'
+  },
+  {
+    id: 'species-cactus',
+    name: 'Cactus Species',
+    description: 'Unlock the resilient Cactus',
+    price: 120,
+    icon: <Palette className="w-6 h-6" />,
+    category: 'species',
+    effect: 'Unlock Cactus',
+    species: 'cactus'
   }
 ];
 

@@ -6,8 +6,18 @@ const plantAI = {
   },
   
   determineMood: (message, response) => {
-    // Your existing mood determination logic if any
-    return 'neutral';
+    const msg = message.toLowerCase();
+    const resp = (response?.reply || '').toLowerCase();
+    if (msg.includes('water') || resp.includes('thirsty')) return 'thirsty';
+    if (msg.includes('grow') || msg.includes('progress') || resp.includes('growing')) return 'growing';
+    if (msg.includes('happy') || resp.includes('happy') || resp.includes('yay')) return 'happy';
+    if (msg.includes('excited') || resp.includes('excited') || resp.includes('energy')) return 'excited';
+    if (msg.includes('thank') || resp.includes('thank')) return 'grateful';
+    if (msg.includes('alone') || msg.includes('lonely') || resp.includes('lonely')) return 'lonely';
+    if (msg.includes('worried') || resp.includes('worried') || msg.includes('sick')) return 'worried';
+    if (msg.includes('joke') || msg.includes('pun') || resp.includes('joke')) return 'playful';
+    if (msg.includes('wise') || resp.includes('advice')) return 'wise';
+    return 'happy'; // Default mood
   },
 
   generateDailyFact: async () => {

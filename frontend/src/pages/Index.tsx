@@ -63,7 +63,11 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="eco"
-                onClick={() => navigate('/dashboard')}
+                onClick={() => {
+                  const base = (import.meta as any).env?.VITE_SERVER_BASE || 'http://localhost:3000';
+                  const url = base.replace(/\/$/, '') + '/auth/google/start';
+                  window.location.href = url;
+                }}
                 className="text-lg px-8 py-4"
               >
                 Start Growing

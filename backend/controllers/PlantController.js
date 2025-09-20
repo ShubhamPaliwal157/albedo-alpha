@@ -1,6 +1,8 @@
 const Plant = require('../models/Plant');
 const User = require('../models/User');
 const plantAI = require('../services/plantAI');
+const ChatHistory = require('../models/ChatHistory');
+const PlantMemory = require('../models/PlantMemory');
 
 const PlantController = {
   // Create a new plant for a user
@@ -96,9 +98,11 @@ const PlantController = {
           plant.growthProgress = 0;
           
           // Advance growth stage
-          const growthStages = ['seed', 'sprout', 'sapling', 'young', 'mature'];
+          const growthStages = [
+            'seed', 'sprout', 'seedling', 'sapling', 'juvenile',
+            'young', 'mature', 'flowering', 'fruiting', 'ancient'
+          ];
           const currentIndex = growthStages.indexOf(plant.growthStage);
-          
           if (currentIndex < growthStages.length - 1) {
             plant.growthStage = growthStages[currentIndex + 1];
           }
@@ -134,10 +138,11 @@ const PlantController = {
       // Get user info for context
       const user = await User.findById(userId, 'username');
       
-      // Get chat history for context
-      const recentChats = await ChatHistory.find({ plant: plant._id })
-        .sort({ timestamp: -1 })
-        .limit(10);
+      // Retrieve and summarize PlantMemory and ChatHistory for context
+      const plantMemories = await PlantMemory.find({ plant: plant._id }).sort({ timestamp: -1 }).limit(20);
+      const crucialMemories = plantMemories.filter(m => m.type === 'achievement' || m.type === 'milestone');
+      const memorySummary = crucialMemories.map(m => `${m.type}: ${m.details}`).join('; ');
+      const recentChats = await ChatHistory.find({ plant: plant._id }).sort({ timestamp: -1 }).limit(5);
       
       // Generate response from AI
       const aiResponse = await plantAI.generateResponse(message, {
@@ -147,6 +152,7 @@ const PlantController = {
         growthStage: plant.growthStage,
         plantMood: req.body.plantMood || 'neutral',
         ownerName: user.username,
+        memorySummary,
         recentInteractions: recentChats
       });
       
