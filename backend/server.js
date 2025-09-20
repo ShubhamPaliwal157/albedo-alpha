@@ -12,9 +12,25 @@ const PORT = process.env.PORT || 3000;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
 const SERVER_BASE = process.env.SERVER_BASE || `http://localhost:${PORT}`;
 
+// Configure allowed origins for CORS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  FRONTEND_ORIGIN
+].filter(Boolean);
+
 // Middleware
 app.use(cors({
-  origin: FRONTEND_ORIGIN,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Accept'],
   credentials: true

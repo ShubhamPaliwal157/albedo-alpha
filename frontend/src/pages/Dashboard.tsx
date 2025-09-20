@@ -31,37 +31,103 @@ interface VideoLesson {
 
 const videoLessons: VideoLesson[] = [
   {
-    id: 'climate-basics',
-    title: 'Understanding Climate Change Basics',
+    id: 'biosphere-basics',
+    title: 'Understanding Biosphere Basics',
     description: 'Learn the fundamentals of climate change and its impact on our planet.',
-    youtubeId: 'dQw4w9WgXcQ',
+    youtubeId: 'VD6xJq8NguY',
     duration: '5:30',
     difficulty: 'beginner',
     category: 'Climate Science',
     tecoReward: 25,
-    thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`
+    thumbnail: `https://img.youtube.com/vi/VD6xJq8NguY/maxresdefault.jpg`
   },
   {
     id: 'renewable-energy',
     title: 'Renewable Energy Solutions',
     description: 'Explore solar, wind, and other renewable energy technologies.',
-    youtubeId: 'dQw4w9WgXcQ',
+    youtubeId: 'wbR-5mHI6bo',
     duration: '8:15',
     difficulty: 'intermediate',
     category: 'Energy',
     tecoReward: 35,
-    thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
   },
   {
-    id: 'sustainable-living',
-    title: 'Sustainable Living Practices',
+    id: 'climate-change',
+    title: 'Is it too late to stop climate change?',
+    description: 'Explore Is it too late to stop climate change?',
+    youtubeId: 'ipVxxxqwBQw',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/ipVxxxqwBQw/maxresdefault.jpg`
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable Energy Solutions',
+    description: 'Explore solar, wind, and other renewable energy technologies.',
+    youtubeId: 'wbR-5mHI6bo',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable Energy Solutions',
+    description: 'Explore solar, wind, and other renewable energy technologies.',
+    youtubeId: 'wbR-5mHI6bo',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable Energy Solutions',
+    description: 'Explore solar, wind, and other renewable energy technologies.',
+    youtubeId: 'wbR-5mHI6bo',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable Energy Solutions',
+    description: 'Explore solar, wind, and other renewable energy technologies.',
+    youtubeId: 'wbR-5mHI6bo',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
+  },
+  {
+    id: 'renewable-energy',
+    title: 'Renewable Energy Solutions',
+    description: 'Explore solar, wind, and other renewable energy technologies.',
+    youtubeId: 'wbR-5mHI6bo',
+    duration: '8:15',
+    difficulty: 'intermediate',
+    category: 'Energy',
+    tecoReward: 35,
+    thumbnail: `https://img.youtube.com/vi/wbR-5mHI6bo/maxresdefault.jpg`
+  },
+  {
+    id: 'very-important',
+    title: 'Very Important Lesson',
     description: 'Simple daily habits that make a big environmental difference.',
     youtubeId: 'dQw4w9WgXcQ',
-    duration: '6:45',
-    difficulty: 'beginner',
+    duration: '3:33',
+    difficulty: 'advanced',
     category: 'Lifestyle',
-    tecoReward: 30,
-    thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg`
+    tecoReward: 3,
+    thumbnail: `https://img.youtube.com/vi/ipVxxxqwBQw/maxresdefault.jpg`
   }
 ];
 
