@@ -57,7 +57,7 @@ const videoLessons: VideoLesson[] = [
     title: 'Is it too late to stop climate change?',
     description: 'Explore Is it too late to stop climate change?',
     youtubeId: 'ipVxxxqwBQw',
-    duration: '8:15',
+    duration: '8:54',
     difficulty: 'intermediate',
     category: 'Energy',
     tecoReward: 35,

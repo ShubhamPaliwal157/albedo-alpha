@@ -19,6 +19,11 @@ const allowedOrigins = [
   FRONTEND_ORIGIN
 ].filter(Boolean);
 
+// test
+app.get('/', (req, res) => {
+  res.send('Albedo Backend is running');
+});
+
 // Middleware
 app.use(cors({
   origin: function (origin, callback) {
