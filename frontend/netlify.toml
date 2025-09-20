@@ -4,6 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  VITE_API_BASE_URL = "https://albedo-alpha-34zibp71h-shubhams-projects-cc1e0a91.vercel.app"
+  VITE_SERVER_BASE = "https://albedo-alpha-34zibp71h-shubhams-projects-cc1e0a91.vercel.app"
+  VITE_API_BASE = "https://albedo-alpha-34zibp71h-shubhams-projects-cc1e0a91.vercel.app/api"
 
 [[redirects]]
   from = "/*"
