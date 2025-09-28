@@ -160,6 +160,19 @@ const Dashboard = () => {
         VITE_SERVER_BASE: (import.meta as any).env?.VITE_SERVER_BASE
       });
       
+      // Check for JWT token in URL (for cross-domain auth)
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      
+      if (token) {
+        console.log('🔑 JWT token found in URL, storing for API calls');
+        localStorage.setItem('auth_token', token);
+        // Clean up URL by removing token parameter
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete('token');
+        window.history.replaceState({}, document.title, newUrl.toString());
+      }
+      
       try {
         // Get the correct API base URL
         const apiBase = (import.meta as any).env?.VITE_API_BASE_URL || 
@@ -169,12 +182,21 @@ const Dashboard = () => {
         const authUrl = `${apiBase}/api/me`;
         console.log('🔍 Checking auth at:', authUrl);
         
+        // Prepare headers with JWT token if available
+        const headers: HeadersInit = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        };
+        
+        const storedToken = localStorage.getItem('auth_token');
+        if (storedToken) {
+          headers['Authorization'] = `Bearer ${storedToken}`;
+          console.log('🔑 Using stored JWT token for authentication');
+        }
+        
         const res = await fetch(authUrl, { 
           credentials: 'include',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
+          headers
         });
         
         console.log('📡 Auth response status:', res.status, res.statusText);
@@ -183,6 +205,13 @@ const Dashboard = () => {
         if (!res.ok) {
           const errorText = await res.text();
           console.log('❌ Auth check failed - Response body:', errorText);
+          
+          // If JWT token failed, clear it and try again
+          if (storedToken && res.status === 401) {
+            console.log('🗑️ Clearing invalid JWT token');
+            localStorage.removeItem('auth_token');
+          }
+          
           throw new Error(`Auth failed: ${res.status} ${res.statusText}`);
         }
         

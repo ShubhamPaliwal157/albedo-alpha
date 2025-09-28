@@ -55,8 +55,12 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieSession({
   name: 'session',
-  keys: [process.env.SESSION_SECRET || 'dev_secret_key'],
-  maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+  keys: [process.env.SESSION_SECRET || 'fallback-secret'],
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  httpOnly: true,
+  secure: true, // Always true for cross-domain
+  sameSite: 'none', // Required for cross-domain cookies
+  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
 }));
 
 function requireAuth(req, res, next) {
@@ -163,9 +167,24 @@ app.get('/auth/google/callback', async (req, res) => {
     };
     
     console.log('💾 User saved to session:', req.session.user);
-    console.log('🔄 Redirecting to frontend:', `${FRONTEND_ORIGIN}/dashboard`);
+    
+    // For cross-domain deployments, also create a JWT token and pass it in the URL
+    const jwt = require('jsonwebtoken');
+    const token = jwt.sign(
+      { 
+        sub: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture
+      },
+      process.env.SESSION_SECRET || 'fallback-secret',
+      { expiresIn: '24h' }
+    );
+    
+    console.log('🔑 JWT token created for cross-domain auth');
+    console.log('🔄 Redirecting to frontend with token:', `${FRONTEND_ORIGIN}/dashboard?token=${token}`);
 
-    res.redirect(`${FRONTEND_ORIGIN}/dashboard`);
+    res.redirect(`${FRONTEND_ORIGIN}/dashboard?token=${token}`);
   } catch (e) {
     console.error('❌ OAuth callback error:', e);
     res.status(500).send('OAuth error: ' + e.message);
@@ -185,14 +204,30 @@ app.get('/api/me', (req, res) => {
   console.log('Session user:', req.session?.user);
   console.log('Session ID:', req.session?.id);
   console.log('Cookies:', req.headers.cookie);
+  console.log('Authorization header:', req.headers.authorization);
   
-  if (!req.session || !req.session.user) {
-    console.log('❌ No session or user - returning 401');
-    return res.status(401).json({ success: false, message: 'No session or user found' });
+  // First try session-based auth (for same-domain)
+  if (req.session && req.session.user) {
+    console.log('✅ User authenticated via session - returning user data');
+    return res.json({ success: true, user: req.session.user });
   }
   
-  console.log('✅ User authenticated - returning user data');
-  res.json({ success: true, user: req.session.user });
+  // Then try JWT token auth (for cross-domain)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.substring(7);
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'fallback-secret');
+      console.log('✅ User authenticated via JWT token - returning user data');
+      return res.json({ success: true, user: decoded });
+    } catch (error) {
+      console.log('❌ JWT token verification failed:', error.message);
+    }
+  }
+  
+  console.log('❌ No valid session or token - returning 401');
+  res.status(401).json({ success: false, message: 'No session or user found' });
 });
 
 // PlantAI Route (requires auth)

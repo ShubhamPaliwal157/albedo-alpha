@@ -34,7 +34,23 @@ async function fetchWithFallback(path: string, init?: RequestInit) {
   
   // Always include credentials so session cookie is sent
   const baseInit: RequestInit = { credentials: 'include' };
-  const finalInit = { ...baseInit, ...init };
+  
+  // Add JWT token if available for cross-domain auth
+  const token = localStorage.getItem('auth_token');
+  const headers = {
+    ...((init?.headers as Record<string, string>) || {}),
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+    console.log('🔑 Adding JWT token to request');
+  }
+  
+  const finalInit = { 
+    ...baseInit, 
+    ...init,
+    headers
+  };
   console.log('📡 Request config:', finalInit);
   
   let res = await fetch(primaryUrl, finalInit);
