@@ -1,13 +1,14 @@
 const apiBaseEnv = (import.meta as any).env?.VITE_API_BASE_URL;
 const DEFAULT_DEV_BASE = "/api";
-const PRODUCTION_BASE = "https://albedo-alpha.vercel.app/api";
-const LOCAL_FALLBACK_BASE = "http://localhost:3000/api";
+const PRODUCTION_BASE = "https://albedo-alpha.vercel.app";
+const LOCAL_FALLBACK_BASE = "http://localhost:3000";
+
 // Important: when developing on Vite (5173), prefer direct backend to preserve session cookies
 const API_BASE = apiBaseEnv
   ? `${apiBaseEnv}/api`
   : (typeof window !== 'undefined' && window.location && window.location.port === '5173')
-    ? LOCAL_FALLBACK_BASE
-    : PRODUCTION_BASE;
+    ? `${LOCAL_FALLBACK_BASE}/api`
+    : `${PRODUCTION_BASE}/api`;
 
 export interface Plant {
   _id: string;
@@ -26,7 +27,7 @@ async function fetchWithFallback(path: string, init?: RequestInit) {
   let res = await fetch(primaryUrl, { ...baseInit, ...init });
   // If running on 5173 without proxy forwarding, retry directly to localhost:3000
   if (res.status === 404 && API_BASE === DEFAULT_DEV_BASE) {
-    const fallbackUrl = `${LOCAL_FALLBACK_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+    const fallbackUrl = `${LOCAL_FALLBACK_BASE}/api${path.startsWith('/') ? '' : '/'}${path}`;
     res = await fetch(fallbackUrl, { ...baseInit, ...init });
   }
   return res;

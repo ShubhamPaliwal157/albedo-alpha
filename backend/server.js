@@ -16,6 +16,8 @@ const SERVER_BASE = process.env.SERVER_BASE || `http://localhost:${PORT}`;
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://albedo-eco.netlify.app',
+  'https://albedo-alpha.vercel.app',
   FRONTEND_ORIGIN
 ].filter(Boolean);
 

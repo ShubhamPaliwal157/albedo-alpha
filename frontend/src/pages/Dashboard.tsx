@@ -153,26 +153,60 @@ const Dashboard = () => {
     // Auth gate: check session
     (async () => {
       try {
-        const res = await fetch(((import.meta as any).env?.VITE_API_BASE_URL || 'https://albedo-alpha.vercel.app') + '/api/me', { credentials: 'include' });
-        if (!res.ok) throw new Error('unauthorized');
+        // Get the correct API base URL
+        const apiBase = (import.meta as any).env?.VITE_API_BASE_URL || 
+          (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
+        
+        const res = await fetch(`${apiBase}/api/me`, { 
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!res.ok) {
+          console.log('Auth check failed:', res.status, res.statusText);
+          throw new Error('unauthorized');
+        }
+        
         const json = await res.json();
-        if (!json?.success) throw new Error('unauthorized');
-      } catch {
-        // redirect to Google OAuth start
-        window.location.href = ((import.meta as any).env?.VITE_SERVER_BASE?.replace(/\/$/, '') || 'https://albedo-alpha.vercel.app') + '/auth/google/start';
+        if (!json?.success) {
+          console.log('Auth response invalid:', json);
+          throw new Error('unauthorized');
+        }
+        
+        console.log('User authenticated:', json.user);
+      } catch (error) {
+        console.log('Authentication failed, redirecting to login:', error);
+        // Get the correct server base URL
+        const serverBase = (import.meta as any).env?.VITE_SERVER_BASE || 
+          (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
+        
+        // Add a small delay to prevent rapid redirects
+        setTimeout(() => {
+          window.location.href = `${serverBase.replace(/\/$/, '')}/auth/google/start`;
+        }, 1000);
         return;
       }
+      
       // Load saved client state on mount
       try {
         const data = await readClientState();
         const s = data?.state || {};
         if (s.plantType) setPlantType(s.plantType);
         if (s.backgroundTheme) setBackgroundTheme(s.backgroundTheme);
-      } catch {}
+      } catch (e) {
+        console.log('Failed to load client state:', e);
+      }
+      
       try {
         const a = await getAchievements();
         setAchievements(a.achievements || []);
-      } catch {}
+      } catch (e) {
+        console.log('Failed to load achievements:', e);
+      }
+      
       // Load completed videos
       const completed = localStorage.getItem('completedVideos');
       if (completed) setCompletedVideos(new Set(JSON.parse(completed)));

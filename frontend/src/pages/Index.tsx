@@ -146,8 +146,10 @@ const Index = () => {
               <Button 
                 size="lg" 
                 onClick={() => {
-                  const base = (import.meta as any).env?.VITE_SERVER_BASE || 'http://localhost:3000';
+                  const base = (import.meta as any).env?.VITE_SERVER_BASE || 
+                    (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
                   const url = base.replace(/\/$/, '') + '/auth/google/start';
+                  console.log('Redirecting to Google OAuth:', url);
                   window.location.href = url;
                 }}
                 className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-lg px-10 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
@@ -457,8 +459,10 @@ const Index = () => {
               <Button 
                 size="lg" 
                 onClick={() => {
-                  const base = (import.meta as any).env?.VITE_SERVER_BASE || 'http://localhost:3000';
+                  const base = (import.meta as any).env?.VITE_SERVER_BASE || 
+                    (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
                   const url = base.replace(/\/$/, '') + '/auth/google/start';
+                  console.log('Redirecting to Google OAuth:', url);
                   window.location.href = url;
                 }}
                 className="bg-white text-emerald-600 hover:bg-emerald-50 text-lg px-12 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
