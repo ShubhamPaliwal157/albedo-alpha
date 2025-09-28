@@ -43,11 +43,14 @@ app.use(cors({
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
+      callback(null, origin); // Return the origin instead of true for credentials
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
+  credentials: true, // Allow credentials (cookies, authorization headers)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
   credentials: true
@@ -58,9 +61,9 @@ app.use(cookieSession({
   keys: [process.env.SESSION_SECRET || 'fallback-secret'],
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
   httpOnly: true,
-  secure: true, // Always true for cross-domain
-  sameSite: 'none', // Required for cross-domain cookies
-  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+  secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-site cookies in production
+  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : 'localhost'
 }));
 
 function requireAuth(req, res, next) {
