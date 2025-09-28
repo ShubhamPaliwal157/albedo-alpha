@@ -146,10 +146,21 @@ const Index = () => {
               <Button 
                 size="lg" 
                 onClick={() => {
+                  console.log('🚀 LOGIN BUTTON CLICKED (Hero Section)');
+                  console.log('Current URL:', window.location.href);
+                  console.log('Current port:', window.location.port);
+                  console.log('Environment variables:', {
+                    VITE_SERVER_BASE: (import.meta as any).env?.VITE_SERVER_BASE
+                  });
+                  
                   const base = (import.meta as any).env?.VITE_SERVER_BASE || 
                     (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
                   const url = base.replace(/\/$/, '') + '/auth/google/start';
-                  console.log('Redirecting to Google OAuth:', url);
+                  
+                  console.log('🌐 Using server base:', base);
+                  console.log('🔗 Final OAuth URL:', url);
+                  console.log('🚀 Redirecting to Google OAuth...');
+                  
                   window.location.href = url;
                 }}
                 className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white text-lg px-10 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
@@ -459,10 +470,21 @@ const Index = () => {
               <Button 
                 size="lg" 
                 onClick={() => {
+                  console.log('🚀 LOGIN BUTTON CLICKED (CTA Section)');
+                  console.log('Current URL:', window.location.href);
+                  console.log('Current port:', window.location.port);
+                  console.log('Environment variables:', {
+                    VITE_SERVER_BASE: (import.meta as any).env?.VITE_SERVER_BASE
+                  });
+                  
                   const base = (import.meta as any).env?.VITE_SERVER_BASE || 
                     (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
                   const url = base.replace(/\/$/, '') + '/auth/google/start';
-                  console.log('Redirecting to Google OAuth:', url);
+                  
+                  console.log('🌐 Using server base:', base);
+                  console.log('🔗 Final OAuth URL:', url);
+                  console.log('🚀 Redirecting to Google OAuth...');
+                  
                   window.location.href = url;
                 }}
                 className="bg-white text-emerald-600 hover:bg-emerald-50 text-lg px-12 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"

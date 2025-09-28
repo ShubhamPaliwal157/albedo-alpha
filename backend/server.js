@@ -68,45 +68,92 @@ function requireAuth(req, res, next) {
 
 // Google OAuth - start
 app.get('/auth/google/start', (req, res) => {
+  console.log('🚀 GOOGLE OAUTH START ENDPOINT HIT');
+  console.log('Request origin:', req.get('origin'));
+  console.log('Request referer:', req.get('referer'));
+  console.log('Request headers:', req.headers);
+  console.log('SERVER_BASE:', SERVER_BASE);
+  console.log('GOOGLE_CLIENT_ID:', process.env.GOOGLE_CLIENT_ID ? 'Present' : 'Missing');
+  
+  const redirectUri = `${SERVER_BASE}/auth/google/callback`;
+  console.log('Redirect URI:', redirectUri);
+  
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID || '',
-    redirect_uri: `${SERVER_BASE}/auth/google/callback`,
+    redirect_uri: redirectUri,
     response_type: 'code',
     scope: 'openid email profile',
     prompt: 'select_account'
   });
   const url = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  console.log('🔗 Final Google OAuth URL:', url);
+  console.log('🚀 Redirecting to Google...');
+  
   res.redirect(url);
 });
 
 // Google OAuth - callback
 app.get('/auth/google/callback', async (req, res) => {
+  console.log('🔄 GOOGLE OAUTH CALLBACK HIT');
+  console.log('Query params:', req.query);
+  console.log('Session before:', req.session);
+  
   try {
     const code = req.query.code;
-    if (!code) return res.status(400).send('Missing code');
+    const error = req.query.error;
+    
+    if (error) {
+      console.log('❌ OAuth error from Google:', error);
+      return res.status(400).send(`OAuth error: ${error}`);
+    }
+    
+    if (!code) {
+      console.log('❌ Missing authorization code');
+      return res.status(400).send('Missing code');
+    }
+
+    console.log('✅ Authorization code received:', code.substring(0, 20) + '...');
+    
+    const tokenRequestBody = {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID || '',
+      client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+      redirect_uri: `${SERVER_BASE}/auth/google/callback`,
+      grant_type: 'authorization_code'
+    };
+    
+    console.log('📡 Token exchange request:', {
+      ...tokenRequestBody,
+      client_secret: tokenRequestBody.client_secret ? 'Present' : 'Missing'
+    });
 
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        code,
-        client_id: process.env.GOOGLE_CLIENT_ID || '',
-        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
-        redirect_uri: `${SERVER_BASE}/auth/google/callback`,
-        grant_type: 'authorization_code'
-      })
+      body: new URLSearchParams(tokenRequestBody)
     });
+    
+    console.log('📡 Token response status:', tokenRes.status, tokenRes.statusText);
+    
     if (!tokenRes.ok) {
       const txt = await tokenRes.text();
-      console.error('Token exchange failed:', txt);
-      return res.status(500).send('OAuth token exchange failed');
+      console.error('❌ Token exchange failed:', txt);
+      return res.status(500).send('OAuth token exchange failed: ' + txt);
     }
+    
     const tokenJson = await tokenRes.json();
+    console.log('✅ Token response received:', Object.keys(tokenJson));
+    
     const idToken = tokenJson.id_token;
-    if (!idToken) return res.status(500).send('No id_token');
+    if (!idToken) {
+      console.log('❌ No id_token in response');
+      return res.status(500).send('No id_token');
+    }
 
     // Decode id_token (JWT) payload (no signature verification here for brevity)
     const payload = JSON.parse(Buffer.from(idToken.split('.')[1], 'base64').toString());
+    console.log('👤 User payload:', payload);
+    
     // Save user in session
     req.session.user = {
       sub: payload.sub,
@@ -114,11 +161,14 @@ app.get('/auth/google/callback', async (req, res) => {
       name: payload.name,
       picture: payload.picture
     };
+    
+    console.log('💾 User saved to session:', req.session.user);
+    console.log('🔄 Redirecting to frontend:', `${FRONTEND_ORIGIN}/dashboard`);
 
     res.redirect(`${FRONTEND_ORIGIN}/dashboard`);
   } catch (e) {
-    console.error('OAuth callback error:', e);
-    res.status(500).send('OAuth error');
+    console.error('❌ OAuth callback error:', e);
+    res.status(500).send('OAuth error: ' + e.message);
   }
 });
 
@@ -128,7 +178,20 @@ app.post('/auth/logout', (req, res) => {
 });
 
 app.get('/api/me', (req, res) => {
-  if (!req.session || !req.session.user) return res.status(401).json({ success: false });
+  console.log('🔍 AUTH CHECK ENDPOINT HIT');
+  console.log('Request origin:', req.get('origin'));
+  console.log('Request referer:', req.get('referer'));
+  console.log('Session exists:', !!req.session);
+  console.log('Session user:', req.session?.user);
+  console.log('Session ID:', req.session?.id);
+  console.log('Cookies:', req.headers.cookie);
+  
+  if (!req.session || !req.session.user) {
+    console.log('❌ No session or user - returning 401');
+    return res.status(401).json({ success: false, message: 'No session or user found' });
+  }
+  
+  console.log('✅ User authenticated - returning user data');
   res.json({ success: true, user: req.session.user });
 });
 

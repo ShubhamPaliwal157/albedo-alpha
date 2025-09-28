@@ -21,15 +21,33 @@ const defaultHeaders = (clientId?: string) => ({
 });
 
 async function fetchWithFallback(path: string, init?: RequestInit) {
+  console.log('🌐 API CALL:', path);
+  console.log('🔧 API_BASE:', API_BASE);
+  console.log('🔧 Environment:', {
+    VITE_API_BASE_URL: (import.meta as any).env?.VITE_API_BASE_URL,
+    port: window.location.port,
+    hostname: window.location.hostname
+  });
+  
   const primaryUrl = `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+  console.log('🔗 Primary URL:', primaryUrl);
+  
   // Always include credentials so session cookie is sent
   const baseInit: RequestInit = { credentials: 'include' };
-  let res = await fetch(primaryUrl, { ...baseInit, ...init });
+  const finalInit = { ...baseInit, ...init };
+  console.log('📡 Request config:', finalInit);
+  
+  let res = await fetch(primaryUrl, finalInit);
+  console.log('📡 Primary response:', res.status, res.statusText);
+  
   // If running on 5173 without proxy forwarding, retry directly to localhost:3000
   if (res.status === 404 && API_BASE === DEFAULT_DEV_BASE) {
     const fallbackUrl = `${LOCAL_FALLBACK_BASE}/api${path.startsWith('/') ? '' : '/'}${path}`;
-    res = await fetch(fallbackUrl, { ...baseInit, ...init });
+    console.log('🔄 Trying fallback URL:', fallbackUrl);
+    res = await fetch(fallbackUrl, finalInit);
+    console.log('📡 Fallback response:', res.status, res.statusText);
   }
+  
   return res;
 }
 

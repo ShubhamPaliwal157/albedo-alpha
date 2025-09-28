@@ -152,12 +152,24 @@ const Dashboard = () => {
   useEffect(() => {
     // Auth gate: check session
     (async () => {
+      console.log('🔐 DASHBOARD AUTH CHECK STARTED');
+      console.log('Current URL:', window.location.href);
+      console.log('Current port:', window.location.port);
+      console.log('Environment variables:', {
+        VITE_API_BASE_URL: (import.meta as any).env?.VITE_API_BASE_URL,
+        VITE_SERVER_BASE: (import.meta as any).env?.VITE_SERVER_BASE
+      });
+      
       try {
         // Get the correct API base URL
         const apiBase = (import.meta as any).env?.VITE_API_BASE_URL || 
           (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
         
-        const res = await fetch(`${apiBase}/api/me`, { 
+        console.log('🌐 Using API base:', apiBase);
+        const authUrl = `${apiBase}/api/me`;
+        console.log('🔍 Checking auth at:', authUrl);
+        
+        const res = await fetch(authUrl, { 
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
@@ -165,28 +177,40 @@ const Dashboard = () => {
           }
         });
         
+        console.log('📡 Auth response status:', res.status, res.statusText);
+        console.log('📡 Auth response headers:', Object.fromEntries(res.headers.entries()));
+        
         if (!res.ok) {
-          console.log('Auth check failed:', res.status, res.statusText);
-          throw new Error('unauthorized');
+          const errorText = await res.text();
+          console.log('❌ Auth check failed - Response body:', errorText);
+          throw new Error(`Auth failed: ${res.status} ${res.statusText}`);
         }
         
         const json = await res.json();
+        console.log('📄 Auth response JSON:', json);
+        
         if (!json?.success) {
-          console.log('Auth response invalid:', json);
-          throw new Error('unauthorized');
+          console.log('❌ Auth response invalid - success field missing or false');
+          throw new Error('Auth response invalid');
         }
         
-        console.log('User authenticated:', json.user);
+        console.log('✅ User authenticated successfully:', json.user);
       } catch (error) {
-        console.log('Authentication failed, redirecting to login:', error);
+        console.log('🚨 Authentication failed, preparing redirect:', error);
+        
         // Get the correct server base URL
         const serverBase = (import.meta as any).env?.VITE_SERVER_BASE || 
           (window.location.port === '5173' ? 'http://localhost:3000' : 'https://albedo-alpha.vercel.app');
         
-        // Add a small delay to prevent rapid redirects
+        const redirectUrl = `${serverBase.replace(/\/$/, '')}/auth/google/start`;
+        console.log('🔄 Will redirect to:', redirectUrl);
+        console.log('⏱️ Redirecting in 2 seconds to prevent infinite loops...');
+        
+        // Add a longer delay to prevent rapid redirects and allow logging
         setTimeout(() => {
-          window.location.href = `${serverBase.replace(/\/$/, '')}/auth/google/start`;
-        }, 1000);
+          console.log('🚀 Redirecting now to Google OAuth...');
+          window.location.href = redirectUrl;
+        }, 2000);
         return;
       }
       
