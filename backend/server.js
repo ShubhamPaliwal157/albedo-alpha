@@ -21,7 +21,44 @@ const allowedOrigins = [
   FRONTEND_ORIGIN
 ].filter(Boolean);
 
-// test
+// Configure CORS with proper settings
+app.use(cors({
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      console.warn(msg);
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+}));
+
+// Trust first proxy (important for Vercel)
+app.set('trust proxy', 1);
+
+// Configure session middleware
+app.use(cookieSession({
+  name: 'session',
+  keys: [process.env.SESSION_SECRET || 'dev-secret-key'],
+  maxAge: 24 * 60 * 60 * 1000, // 24 hours
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined,
+  path: '/',
+  overwrite: true
+}));
+
+// Test endpoint
 app.get('/', (req, res) => {
   res.send('Albedo Backend is running');
 });

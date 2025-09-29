@@ -5,6 +5,11 @@
     },
     "memories": [
       {
+        "type": "watering",
+        "details": "Watered to 47%",
+        "timestamp": 1759126865802
+      },
+      {
         "type": "milestone",
         "details": "Reached 25% growth",
         "timestamp": 1758347705226
