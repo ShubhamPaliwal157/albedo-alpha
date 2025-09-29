@@ -4,12 +4,18 @@ const path = require('path');
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const STATE_FILE = path.join(DATA_DIR, 'state.json');
 
+// Vercel serverless is read-only. Use in-memory store in production or when FS writes fail.
+const USE_MEMORY = process.env.NODE_ENV === 'production' || process.env.USE_MEMORY_STORE === 'true';
+let memoryDB = {};
+
 function ensureStore() {
+  if (USE_MEMORY) return; // skip FS operations in serverless
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
   if (!fs.existsSync(STATE_FILE)) fs.writeFileSync(STATE_FILE, JSON.stringify({}), 'utf-8');
 }
 
 function readAll() {
+  if (USE_MEMORY) return memoryDB;
   ensureStore();
   try {
     const raw = fs.readFileSync(STATE_FILE, 'utf-8');
@@ -20,8 +26,17 @@ function readAll() {
 }
 
 function writeAll(data) {
+  if (USE_MEMORY) {
+    memoryDB = data;
+    return;
+  }
   ensureStore();
-  fs.writeFileSync(STATE_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(STATE_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    // If FS write fails (e.g., read-only), fall back to memory
+    memoryDB = data;
+  }
 }
 
 function getClient(clientId) {

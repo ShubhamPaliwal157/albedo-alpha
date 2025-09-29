@@ -619,6 +619,26 @@
     "memories": [
       {
         "type": "watering",
+        "details": "Watered to 88.5%",
+        "timestamp": 1759132358297
+      },
+      {
+        "type": "watering",
+        "details": "Watered to 68.5%",
+        "timestamp": 1759132357737
+      },
+      {
+        "type": "watering",
+        "details": "Watered to 48.5%",
+        "timestamp": 1759132357083
+      },
+      {
+        "type": "watering",
+        "details": "Watered to 28.5%",
+        "timestamp": 1759132355874
+      },
+      {
+        "type": "watering",
         "details": "Watered to 95%",
         "timestamp": 1759130323600
       },
