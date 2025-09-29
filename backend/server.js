@@ -42,30 +42,32 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, origin); // Return the origin instead of true for credentials
+    if (allowedOrigins.some(allowedOrigin => 
+      origin === allowedOrigin || 
+      origin.endsWith(new URL(allowedOrigin).hostname)
+    )) {
+      callback(null, origin);
     } else {
+      console.log('CORS blocked for origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Allow credentials (cookies, authorization headers)
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
-  credentials: true
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(cookieSession({
   name: 'session',
-  keys: [process.env.SESSION_SECRET || 'fallback-secret'],
+  keys: [process.env.SESSION_SECRET || 'dev-secret-key'],
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
   sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Required for cross-site cookies in production
-  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : 'localhost'
+  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
 }));
 
+// Authentication middleware
 function requireAuth(req, res, next) {
   if (!req.session || !req.session.user) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
