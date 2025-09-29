@@ -106,10 +106,34 @@ app.use(cookieSession({
 
 // Authentication middleware
 function requireAuth(req, res, next) {
-  if (!req.session || !req.session.user) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  // 1) Prefer session (same-site requests)
+  if (req.session && req.session.user) {
+    return next();
   }
-  next();
+
+  // 2) Allow cross-site requests with JWT in Authorization header
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.substring(7);
+      const jwt = require('jsonwebtoken');
+      const decoded = jwt.verify(token, process.env.SESSION_SECRET || 'fallback-secret');
+
+      // Hydrate a lightweight session user so downstream code works unchanged
+      req.session = req.session || {};
+      req.session.user = {
+        sub: decoded.sub,
+        email: decoded.email,
+        name: decoded.name,
+        picture: decoded.picture
+      };
+      return next();
+    } catch (err) {
+      // fallthrough to 401 below
+    }
+  }
+
+  return res.status(401).json({ success: false, message: 'Unauthorized' });
 }
 
 // Google OAuth - start
